@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu } from "lucide-react";
+import { MenuIcon } from "lucide-react";
 import { ModeToggle } from "./ModeToogle";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { useTheme } from "next-themes";
@@ -14,7 +14,7 @@ export function Navbar() {
   const { resolvedTheme } = useTheme();
 
   return (
-    <header className="fixed top-2 left-[50%] translate-x-[-50%] w-[90%] rounded-lg z-[30] bg-white/10 backdrop-blur-md border border-white/20 shadow-lg">
+    <header className="fixed top-2 left-[50%] translate-x-[-50%] w-[90%] rounded-lg z-[30] bg-transparent backdrop-blur-md border border-white/10 shadow-lg">
       <div className="w-full flex h-14 items-center justify-between px-8">
         {/* Logo */}
         <Link href="/">
@@ -23,25 +23,11 @@ export function Navbar() {
 
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-4">
-          <ModeToggle />
-
           <SignedOut>
-            <Link href="/sign-in">
-              <Button variant="ghost" size="sm">
-                Login
-              </Button>
-            </Link>
-            <Link href="/sign-up">
-              <Button size="sm">Get Started</Button>
-            </Link>
+            <SignedOutNav />
           </SignedOut>
-
           <SignedIn>
-            <UserButton
-              appearance={{
-                baseTheme: resolvedTheme === "dark" ? dark : undefined,
-              }}
-            />
+            <SignedInNav resolvedTheme={resolvedTheme} />
           </SignedIn>
         </nav>
 
@@ -50,7 +36,7 @@ export function Navbar() {
           <Sheet>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon">
-                <Menu className="h-10 w-10" />
+                <MenuIcon className="h-10 w-10" />
               </Button>
             </SheetTrigger>
             <SheetContent
@@ -58,21 +44,11 @@ export function Navbar() {
               className="w-[240px] sm:w-[300px] px-4 py-2"
             >
               <div className="flex flex-col gap-4 mt-8">
-                <ModeToggle />
-
                 <SignedOut>
-                  <Link href="/sign-in">
-                    <Button variant="ghost" size="sm">
-                      Login
-                    </Button>
-                  </Link>
-                  <Link href="/sign-up">
-                    <Button size="sm">Get Started</Button>
-                  </Link>
+                  <SignedOutNav isMobile />
                 </SignedOut>
-
                 <SignedIn>
-                  <UserButton />
+                  <SignedInNav isMobile resolvedTheme={resolvedTheme} />
                 </SignedIn>
               </div>
             </SheetContent>
@@ -80,5 +56,60 @@ export function Navbar() {
         </div>
       </div>
     </header>
+  );
+}
+
+function SignedOutNav({ isMobile = false }: { isMobile?: boolean }) {
+  return (
+    <>
+      <Link href="/plans">
+        <Button variant="link" size="sm">
+          Plans
+        </Button>
+      </Link>
+      <Link href="/sign-in">
+        <Button variant="link" size="sm">
+          Login
+        </Button>
+      </Link>
+      <Link href="/sign-up">
+        <Button size="sm">Get Started</Button>
+      </Link>
+      <ModeToggle showLabel={isMobile} />
+    </>
+  );
+}
+
+function SignedInNav({
+  isMobile = false,
+  resolvedTheme,
+}: {
+  isMobile?: boolean;
+  resolvedTheme?: string;
+}) {
+  return (
+    <>
+      <Link href="/dashboard">
+        <Button variant="link" size="sm">
+          Dashboard
+        </Button>
+      </Link>
+      <Link href="/prompts">
+        <Button variant="link" size="sm">
+          Prompts
+        </Button>
+      </Link>
+      <Link href="/plans">
+        <Button variant="link" size="sm">
+          Plans
+        </Button>
+      </Link>
+      <ModeToggle showLabel={isMobile} />
+      <UserButton
+        appearance={{
+          baseTheme: resolvedTheme === "dark" ? dark : undefined,
+        }}
+      />
+    </>
   );
 }
